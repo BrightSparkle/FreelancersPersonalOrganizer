@@ -1,0 +1,1 @@
+create type task_priority as enum ('LOW', 'MEDIUM', 'HIGH');

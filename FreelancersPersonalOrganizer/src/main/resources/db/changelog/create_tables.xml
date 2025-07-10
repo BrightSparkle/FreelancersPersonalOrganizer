@@ -1,0 +1,26 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="create-tables" author="ek.march">
+        <sqlFile path="scripts/update/create_user_role.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="scripts/update/create_task_priority.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="scripts/update/create_user.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="scripts/update/create_project.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="scripts/update/create_task.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="scripts/update/create_comment.sql" relativeToChangelogFile="true"/>
+
+        <rollback>
+            <sqlFile path="scripts/rollback/create_user_role_rollback.sql" relativeToChangelogFile="true"/>
+            <sqlFile path="scripts/rollback/create_task_priority_rollback.sql" relativeToChangelogFile="true"/>
+            <sqlFile path="scripts/rollback/create_user_rollback.sql" relativeToChangelogFile="true"/>
+            <sqlFile path="scripts/rollback/create_project_rollback.sql" relativeToChangelogFile="true"/>
+            <sqlFile path="scripts/rollback/create_task_rollback.sql" relativeToChangelogFile="true"/>
+            <sqlFile path="scripts/rollback/create_comment_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
+
+
+</databaseChangeLog>

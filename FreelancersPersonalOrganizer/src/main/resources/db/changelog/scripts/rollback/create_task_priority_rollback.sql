@@ -1,0 +1,1 @@
+drop type task_priority cascade;
