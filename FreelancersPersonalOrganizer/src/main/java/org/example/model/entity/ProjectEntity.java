@@ -20,7 +20,7 @@ public class ProjectEntity {
     private String name;
 
     // Владелец проекта — связь с сущностью User
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "project_owner_fk"))
     private UserEntity owner;
 }

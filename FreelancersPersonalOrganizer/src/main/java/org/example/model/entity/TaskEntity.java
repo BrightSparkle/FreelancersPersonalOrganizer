@@ -3,6 +3,8 @@ package org.example.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.model.entity.type.TaskPriority;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.time.LocalDateTime;
 
@@ -23,12 +25,13 @@ public class TaskEntity {
     private String title;
 
     // Связь с проектом
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "task_project_fk"))
     private ProjectEntity project;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Enumerated
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(columnDefinition = "task_priority")
     private TaskPriority priority;
 
     @Column(columnDefinition = "TEXT")

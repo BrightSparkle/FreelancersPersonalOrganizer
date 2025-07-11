@@ -1,4 +1,4 @@
 package org.example.model.response;
 
-public record SignUpResponse(String username) {
+public record SignUpResponse(String username, String role) {
 }

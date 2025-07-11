@@ -9,7 +9,7 @@ create table comment
 
 alter table comment
     add constraint comment_task_fk
-        foreign key (task_id) references task(id);
+        foreign key (task_id) references task(id) on delete cascade;
 
 alter table comment
     add constraint comment_user_fk

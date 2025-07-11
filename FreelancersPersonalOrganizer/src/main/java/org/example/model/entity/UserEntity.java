@@ -3,9 +3,13 @@ package org.example.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.model.entity.type.UserRole;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.sql.Types;
+
 
 @Entity
 @Table(name = "\"user\"")
@@ -28,5 +32,8 @@ public class UserEntity {
 
     private String password;
 
-    private UserRole role;
+    @Enumerated
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(columnDefinition = "user_role")
+    private UserRole userRole;
 }

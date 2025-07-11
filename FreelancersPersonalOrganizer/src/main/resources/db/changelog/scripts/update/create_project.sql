@@ -7,4 +7,5 @@ create table project
 
 alter table project
     add constraint project_owner_fk
-        foreign key (owner_id) references "user"(id);
+        foreign key (owner_id) references "user"(id)
+            ON DELETE CASCADE;
