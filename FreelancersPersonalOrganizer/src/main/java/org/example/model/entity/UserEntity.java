@@ -32,8 +32,7 @@ public class UserEntity {
 
     private String password;
 
-    @Enumerated
-    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @JdbcTypeCode(Types.OTHER)
     @Column(columnDefinition = "user_role")
     private UserRole userRole;
 }

@@ -8,12 +8,9 @@ import org.example.model.response.ProjectResponse;
 import org.example.model.response.ErrorResponse;
 import org.example.service.ProjectService;
 import org.example.service.UserService;
-import org.example.utils.JwtTokenProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -22,17 +19,15 @@ public class ProjectController {
 
     private final UserService userService;
     private final ProjectService projectService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/developer/create")
-    public ResponseEntity<?> createNewProject(@RequestHeader("Authorization") String token, @RequestBody ProjectRequest projectRequest) {
+    public ResponseEntity<?> createNewProject(@RequestBody ProjectRequest projectRequest) {
 
-        String username = jwtTokenProvider.getUsernameFromToken(token);
+        String username = projectRequest.username();
 
         UserEntity user = userService.findByUsername(username).get();
 
-        if(projectService.findByOwner(user).stream().
-                anyMatch(prj->prj.getName().equals(projectRequest.name()))) {
+        if(projectService.findByNameAndOwner(projectRequest.name(), user).isPresent()) {
             return new ResponseEntity<>(new ErrorResponse("Проект с таким названием уже существует"), HttpStatus.BAD_REQUEST);
         }
 
@@ -43,9 +38,9 @@ public class ProjectController {
     }
 
     @DeleteMapping("/developer/delete")
-    public ResponseEntity<?> deleteProject(@RequestHeader("Authorization") String token, @RequestBody ProjectRequest projectRequest) {
+    public ResponseEntity<?> deleteProject(@RequestBody ProjectRequest projectRequest) {
 
-        String username = jwtTokenProvider.getUsernameFromToken(token);
+        String username = projectRequest.username();
 
         UserEntity user = userService.findByUsername(username).get();
 
@@ -56,16 +51,12 @@ public class ProjectController {
 
         projectService.remove(projectRequest.name(), user);
 
-
         return ResponseEntity.ok(new ProjectResponse(projectRequest.name()));
 
     }
 
-
-    @DeleteMapping("/developer/getAll")
-    public ResponseEntity<?> getProjects(@RequestHeader("Authorization") String token) {
-
-        String username = jwtTokenProvider.getUsernameFromToken(token);
+    @GetMapping("/getall")
+    public ResponseEntity<?> getProjects(@RequestParam String username) {
 
         UserEntity user = userService.findByUsername(username).get();
 

@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.example.model.entity.type.TaskPriority;
 import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
+import java.sql.Types;
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,8 +31,7 @@ public class TaskEntity {
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "task_project_fk"))
     private ProjectEntity project;
 
-    @Enumerated
-    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @JdbcTypeCode(Types.OTHER)
     @Column(columnDefinition = "task_priority")
     private TaskPriority priority;
 

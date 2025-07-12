@@ -6,7 +6,7 @@ create table task
     priority     task_priority,
     description  TEXT,
     deadline     TIMESTAMP,
-    start_time   TIMESTAMP,
+    start_time   TIMESTAMP default current_timestamp,
     end_time     TIMESTAMP
 );
 

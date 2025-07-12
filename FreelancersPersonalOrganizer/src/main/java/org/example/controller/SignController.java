@@ -8,7 +8,6 @@ import org.example.model.response.ErrorResponse;
 import org.example.model.response.SignInResponse;
 import org.example.model.response.SignUpResponse;
 import org.example.service.UserService;
-import org.example.utils.JwtTokenProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,7 +24,6 @@ import java.util.Optional;
 public class SignController {
 
     private final UserService userService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody SignUpRequest signUpRequest) {
@@ -57,9 +55,7 @@ public class SignController {
             return new ResponseEntity<>(new ErrorResponse("Неверный пароль"), HttpStatus.BAD_REQUEST);
         }
 
-        String token = jwtTokenProvider.generateToken(user.get().getUsername(), List.of(user.get().getUserRole().name()));
-
-        return ResponseEntity.ok(new SignInResponse(user.get().getUsername(), token));
+        return ResponseEntity.ok(new SignInResponse(user.get().getUsername(), user.get().getUserRole().name()));
 
     }
 
