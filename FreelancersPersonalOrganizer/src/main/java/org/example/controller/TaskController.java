@@ -15,15 +15,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/task")
 public class TaskController {
+
     private final TaskService taskService;
     private final ProjectService projectService;
     private final UserService userService;
 
-    // Создать новую задачу
+
     @PostMapping("/developer/create")
     public ResponseEntity<?> createTask(@RequestBody TaskRequest taskRequest) {
 
@@ -40,14 +43,16 @@ public class TaskController {
 
         TaskEntity task = taskService.save(taskRequest.title(), TaskPriority.valueOf(taskRequest.priority()), taskRequest.description(), taskRequest.deadline(), project);
 
-        return ResponseEntity.ok(new TaskResponse(task.getTitle(), task.getPriority().name(), task.getDescription(), task.getDeadline(), task.getStartTime(), null));
+        return ResponseEntity.ok(new TaskResponse(task.getId(),task.getTitle(), task.getPriority().name(), task.getDescription(), task.getDeadline(), task.getStartTime(), null));
     }
 
-    // Удалить задачу по названию и проекту
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteTask(@RequestParam String title, @RequestParam String projectName) {
 
-        ProjectEntity project = projectService.findByName(projectName).orElse(null);
+    @DeleteMapping("/developer/delete")
+    public ResponseEntity<?> deleteTask(@RequestParam String title, @RequestParam String projectName, @RequestParam String username) {
+
+        UserEntity user = userService.findByUsername(username).get();
+
+        ProjectEntity project = projectService.findByNameAndOwner(projectName,user).orElse(null);
 
         if (project == null) {
             return new ResponseEntity<>(new ErrorResponse("Проект не найден"), HttpStatus.BAD_REQUEST);
@@ -62,67 +67,71 @@ public class TaskController {
 
         taskService.remove(title, project);
 
-        return ResponseEntity.ok(new TaskResponse(title, null, null));
+        return ResponseEntity.ok(title);
     }
 
-    // Получить все задачи проекта
-    @GetMapping("/all")
-    public ResponseEntity<?> getTasks(@RequestParam String projectName) {
+    @GetMapping("/getAll")
+    public ResponseEntity<?> getTasks(@RequestParam String projectName, @RequestParam String username) {
 
-        ProjectEntity project = projectService.findByName(projectName).orElse(null);
+        UserEntity user = userService.findByUsername(username).get();
+
+        ProjectEntity project = projectService.findByNameAndOwner(projectName,user).orElse(null);
 
         if (project == null) {
             return new ResponseEntity<>(new ErrorResponse("Проект не найден"), HttpStatus.BAD_REQUEST);
         }
 
         List<TaskResponse> tasks = taskService.findAll(project).stream()
-                .map(task -> new TaskResponse(task.getTitle(), task.getPriority(), task.getDeadline()))
+                .map(task -> new TaskResponse(task.getId(),task.getTitle(), task.getPriority().name(), task.getDescription(), task.getDeadline(), task.getStartTime(), task.getEndTime()))
                 .toList();
 
         return ResponseEntity.ok(tasks);
     }
 
-    // Обновить приоритет задачи
-    @PutMapping("/update/priority")
-    public ResponseEntity<?> updatePriority(@RequestBody TaskUpdatePriorityRequest request) {
+    @PutMapping("/developer/update/priority")
+    public ResponseEntity<?> updatePriority(@RequestBody TaskRequest taskRequest) {
 
-        ProjectEntity project = projectService.findByName(request.projectName()).orElse(null);
+        UserEntity user = userService.findByUsername(taskRequest.username()).get();
+
+        ProjectEntity project = projectService.findByNameAndOwner(taskRequest.projectName(),user).orElse(null);
 
         if (project == null) {
             return new ResponseEntity<>(new ErrorResponse("Проект не найден"), HttpStatus.BAD_REQUEST);
         }
 
         boolean exists = taskService.findAll(project).stream()
-                .anyMatch(task -> task.getTitle().equals(request.title()));
+                .anyMatch(task -> task.getTitle().equals(taskRequest.title()));
 
         if (!exists) {
             return new ResponseEntity<>(new ErrorResponse("Задача не найдена в проекте"), HttpStatus.BAD_REQUEST);
         }
 
-        taskService.setPriority(request.priority(), request.title(), project);
+        taskService.setPriority(TaskPriority.valueOf(taskRequest.priority()), taskRequest.title(), project);
 
-        return ResponseEntity.ok(new TaskResponse(request.title(), request.priority(), null));
+        return ResponseEntity.ok(taskRequest.priority());
     }
 
-    // Обновить время окончания задачи
-    @PutMapping("/update/endtime")
-    public ResponseEntity<?> updateEndTime(@RequestBody TaskUpdateEndTimeRequest request) {
 
-        ProjectEntity project = projectService.findByName(request.projectName()).orElse(null);
+    @PutMapping("/developer/update/endtime")
+    public ResponseEntity<?> updateEndTime(@RequestBody TaskRequest taskRequest) {
+
+        UserEntity user = userService.findByUsername(taskRequest.username()).get();
+
+        ProjectEntity project = projectService.findByNameAndOwner(taskRequest.projectName(),user).orElse(null);
 
         if (project == null) {
             return new ResponseEntity<>(new ErrorResponse("Проект не найден"), HttpStatus.BAD_REQUEST);
         }
 
         boolean exists = taskService.findAll(project).stream()
-                .anyMatch(task -> task.getTitle().equals(request.title()));
+                .anyMatch(task -> task.getTitle().equals(taskRequest.title()));
 
         if (!exists) {
             return new ResponseEntity<>(new ErrorResponse("Задача не найдена в проекте"), HttpStatus.BAD_REQUEST);
         }
 
-        taskService.setEndTime(request.endTime(), request.title(), project);
+        taskService.setEndTime(taskRequest.endTime(),taskRequest.title(),project);
 
-        return ResponseEntity.ok(new TaskResponse(request.title(), null, request.endTime()));
+        return ResponseEntity.ok(taskRequest.endTime());
     }
 }

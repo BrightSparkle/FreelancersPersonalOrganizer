@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface TaskRepository extends JpaRepository<TaskEntity,Long> {
+public interface
+TaskRepository extends JpaRepository<TaskEntity,Long> {
 
     List<TaskEntity> findByProject(ProjectEntity project);
 

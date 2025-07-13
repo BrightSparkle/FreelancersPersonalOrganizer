@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -42,5 +43,9 @@ public class TaskService {
 
     public void setEndTime(LocalDateTime endTime, String title, ProjectEntity project) {
         taskRepository.setEndTimeByTitleAndProject(endTime, title, project);
+    }
+
+    public Optional<TaskEntity> findById(Long id){
+        return taskRepository.findById(id);
     }
 }

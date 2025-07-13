@@ -10,5 +10,6 @@ public record TaskRequest(
         String description,
         LocalDateTime deadline,
         String projectName,
-        String username
+        String username,
+        LocalDateTime endTime
 ) {}

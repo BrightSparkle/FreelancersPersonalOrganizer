@@ -6,6 +6,7 @@ import org.example.model.entity.type.UserRole;
 import org.example.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,6 +33,10 @@ public class UserService {
                 .build();
 
         return userRepository.saveAndFlush(user);
+    }
+
+    public List<UserEntity> findAllDevelopers() {
+        return userRepository.findAllByUserRole(UserRole.DEVELOPER);
     }
 
 }
