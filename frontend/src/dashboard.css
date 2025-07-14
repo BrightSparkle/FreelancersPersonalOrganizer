@@ -1,0 +1,93 @@
+.dashboard {
+  padding: 30px 0;
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--light-gray);
+    
+    h1 {
+      font-size: 1.8rem;
+      color: var(--dark);
+      
+      span {
+        color: var(--primary);
+      }
+    }
+    
+    button {
+      background: var(--danger);
+      color: white;
+    }
+  }
+  
+  .create-project {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    
+    input {
+      flex: 1;
+      margin-bottom: 0;
+    }
+  }
+  
+  .project-list {
+    list-style: none;
+    
+    li {
+      background: white;
+      border-radius: var(--border-radius);
+      margin-bottom: 10px;
+      transition: var(--transition);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      }
+      
+      a {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--dark);
+        flex: 1;
+        
+        &:hover {
+          color: var(--primary);
+        }
+      }
+      
+      .delete-btn {
+        background: rgba(247, 37, 133, 0.1);
+        color: var(--danger);
+        padding: 5px 10px;
+        font-size: 0.9rem;
+        
+        &:hover {
+          background: rgba(247, 37, 133, 0.2);
+        }
+      }
+    }
+  }
+  
+  > a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 15px;
+    background: var(--secondary);
+    color: white;
+    border-radius: var(--border-radius);
+    
+    &:hover {
+      background: #6409a0;
+    }
+  }
+}
