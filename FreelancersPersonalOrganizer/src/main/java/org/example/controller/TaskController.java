@@ -154,7 +154,7 @@ public class TaskController {
             return new ResponseEntity<>(new ErrorResponse("Задача не найдена в проекте"), HttpStatus.BAD_REQUEST);
         }
 
-        taskService.setEndTime(taskRequest.endTime(),taskRequest.title(),project);
+        taskService.setEndTime(taskRequest.endTime().plusHours(3),taskRequest.title(),project);
 
         return ResponseEntity.ok(taskRequest.endTime());
     }
