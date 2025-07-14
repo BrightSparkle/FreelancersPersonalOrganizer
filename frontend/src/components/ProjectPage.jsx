@@ -126,6 +126,19 @@ export default function ProjectPage() {
     }
   };
 
+  // Проверка дедлайна сегодня и что задача не завершена
+  const isDeadlineToday = (deadline, endTime) => {
+    if (!deadline) return false;
+    if (endTime) return false; // задача завершена — не показываем огонёк
+    const today = new Date();
+    const dl = new Date(deadline);
+    return (
+      dl.getFullYear() === today.getFullYear() &&
+      dl.getMonth() === today.getMonth() &&
+      dl.getDate() === today.getDate()
+    );
+  };
+
   // Фильтруем задачи по дате создания, если фильтр установлен
   const filterDate = filterCreatedAfter ? new Date(filterCreatedAfter) : null;
   const filteredTasks = filterDate
@@ -150,6 +163,12 @@ export default function ProjectPage() {
       destination.index === source.index
     )
       return;
+
+    // Запрет перемещения задач из DONE
+    if (source.droppableId.toUpperCase() === 'DONE') {
+      setError('Задачи из DONE нельзя перемещать');
+      return;
+    }
 
     const draggedTask = tasks.find((t) => t.id.toString() === draggableId);
     if (!draggedTask) return;
@@ -197,43 +216,55 @@ export default function ProjectPage() {
     navigate(`/project/${encodeURIComponent(projectName)}/task/${task.id}`);
   };
 
-  const TaskCard = ({ task, index }) => (
-    <Draggable draggableId={task.id.toString()} index={index}>
-      {(provided, snapshot) => (
-        <div
-          className={`task-card priority-${task.priority.toLowerCase()} ${
-            snapshot.isDragging ? 'dragging' : ''
-          } ${task.priority === 'DONE' ? 'done-task' : ''}`}
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          onClick={() => onTaskClick(task)}
-          style={{
-            userSelect: 'none',
-            ...provided.draggableProps.style,
-          }}
-        >
-          <h4>{task.title}</h4>
-          <p>{task.description}</p>
-          <p><b>Приоритет:</b> {task.priority}</p>
-          <p><b>Начало:</b> {task.startTime ? new Date(task.startTime).toLocaleString() : 'не указано'}</p>
-          <p><b>Дедлайн:</b> {task.deadline ? new Date(task.deadline).toLocaleDateString() : 'не указан'}</p>
-          {task.endTime && <p><b>Завершено:</b> {new Date(task.endTime).toLocaleString()}</p>}
-          {task.priority !== 'DONE' && user.role === 'DEVELOPER' && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDeleteClick(task);
-              }}
-              className="delete-btn"
-            >
-              Удалить
-            </button>
-          )}
-        </div>
-      )}
-    </Draggable>
-  );
+  const TaskCard = ({ task, index }) => {
+    const deadlineToday = isDeadlineToday(task.deadline, task.endTime);
+
+    return (
+      <Draggable draggableId={task.id.toString()} index={index} isDragDisabled={task.priority === 'DONE'}>
+        {(provided, snapshot) => (
+          <div
+            className={`task-card priority-${task.priority.toLowerCase()} ${
+              snapshot.isDragging ? 'dragging' : ''
+            } ${task.priority === 'DONE' ? 'done-task' : ''}`}
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            onClick={() => onTaskClick(task)}
+            style={{
+              userSelect: 'none',
+              ...provided.draggableProps.style,
+              position: 'relative',
+            }}
+          >
+            <h4>
+              {task.title}
+              {deadlineToday && (
+                <span title="Дедлайн сегодня!" style={{ color: 'red', marginLeft: 8, fontWeight: 'bold' }}>
+                  🔥
+                </span>
+              )}
+            </h4>
+            <p>{task.description}</p>
+            <p><b>Приоритет:</b> {task.priority}</p>
+            <p><b>Начало:</b> {task.startTime ? new Date(task.startTime).toLocaleString() : 'не указано'}</p>
+            <p><b>Дедлайн:</b> {task.deadline ? new Date(task.deadline).toLocaleDateString() : 'не указан'}</p>
+            {task.endTime && <p><b>Завершено:</b> {new Date(task.endTime).toLocaleString()}</p>}
+            {task.priority !== 'DONE' && user.role === 'DEVELOPER' && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteClick(task);
+                }}
+                className="delete-btn"
+              >
+                Удалить
+              </button>
+            )}
+          </div>
+        )}
+      </Draggable>
+    );
+  };
 
   return (
     <div className="project-page">
@@ -260,6 +291,8 @@ export default function ProjectPage() {
           <button onClick={() => setNotification(null)} className="close-notification">×</button>
         </div>
       )}
+
+      {error && <p className="error">{error}</p>}
 
       {user.role === 'DEVELOPER' && (
         <section className="create-task">
@@ -291,8 +324,6 @@ export default function ProjectPage() {
         </section>
       )}
 
-      {error && <p className="error">{error}</p>}
-
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="tasks-columns-wrapper">
           <div className="tasks-columns">
@@ -304,7 +335,7 @@ export default function ProjectPage() {
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                   >
-                    <h3>{priority === 'DONE' ? 'Выполнено (DONE)' : priority}</h3>
+                    <h3>{priority === 'DONE' ? 'DONE' : priority}</h3>
                     {tasksByPriority[priority].length === 0 && <p>Нет задач</p>}
                     {tasksByPriority[priority].map((task, index) => (
                       <TaskCard key={task.id} task={task} index={index} />

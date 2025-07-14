@@ -35,7 +35,6 @@ public class TaskController {
         UserEntity user = userService.findByUsername(taskRequest.username()).get();
         ProjectEntity project = projectService.findByNameAndOwner(taskRequest.projectName(), user).get();
 
-        // Проверка на дубликат задачи с таким же названием в проекте
         boolean exists = taskService.findAll(project).stream()
                 .anyMatch(task -> task.getTitle().equals(taskRequest.title()));
 
@@ -159,4 +158,5 @@ public class TaskController {
 
         return ResponseEntity.ok(taskRequest.endTime());
     }
+
 }
