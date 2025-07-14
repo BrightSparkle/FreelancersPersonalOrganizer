@@ -13,9 +13,11 @@ import org.example.service.TaskService;
 import org.example.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.config.Task;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -67,7 +69,7 @@ public class TaskController {
 
         taskService.remove(title, project);
 
-        return ResponseEntity.ok(title);
+        return ResponseEntity.ok(Map.of("deletedTitle", title));
     }
 
     @GetMapping("/getAll")
@@ -84,6 +86,29 @@ public class TaskController {
         List<TaskResponse> tasks = taskService.findAll(project).stream()
                 .map(task -> new TaskResponse(task.getId(),task.getTitle(), task.getPriority().name(), task.getDescription(), task.getDeadline(), task.getStartTime(), task.getEndTime()))
                 .toList();
+
+        return ResponseEntity.ok(tasks);
+    }
+
+    @GetMapping("/getTask")
+    public ResponseEntity<?> getTask(@RequestParam Long taskId) {
+
+        TaskEntity task = taskService.findById(taskId).get();
+        return ResponseEntity.ok(task);
+    }
+
+    @GetMapping("/getAllDone")
+    public ResponseEntity<?> getDoneTasks(@RequestParam String username) {
+
+        UserEntity user = userService.findByUsername(username).get();
+
+        List<ProjectEntity> projectEntities = projectService.findByOwner(user);
+
+       List<TaskResponse> tasks = projectEntities.stream()
+               .flatMap(prj->taskService.findAll(prj).stream()).filter(task->task.getEndTime()!=null)
+               .map(task -> new TaskResponse(task.getId(),task.getTitle(), task.getPriority().name(), task.getDescription(), task.getDeadline(), task.getStartTime(), task.getEndTime()))
+                .toList();
+
 
         return ResponseEntity.ok(tasks);
     }

@@ -38,11 +38,11 @@ public class TaskService {
     }
 
     public void setPriority(TaskPriority priority, String title,ProjectEntity project) {
-        taskRepository.setPriorityByTitleAndProject(priority, title, project);
+        taskRepository.updatePriorityByTitleAndProject(priority, title, project);
     }
 
     public void setEndTime(LocalDateTime endTime, String title, ProjectEntity project) {
-        taskRepository.setEndTimeByTitleAndProject(endTime, title, project);
+        taskRepository.updateEndTimeByTitleAndProject(endTime, title, project);
     }
 
     public Optional<TaskEntity> findById(Long id){

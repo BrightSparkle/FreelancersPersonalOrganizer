@@ -2,6 +2,7 @@ package org.example.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -29,6 +30,7 @@ public class CommentEntity {
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "comment_user_fk"))
     private UserEntity user;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at",updatable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
 }

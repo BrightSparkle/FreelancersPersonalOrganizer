@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -35,7 +36,7 @@ public class CommentController {
 
         CommentEntity comment = commentService.save(commentRequest.text(), task, author);
 
-        return ResponseEntity.ok(new CommentResponse(comment.getId(), comment.getText(), comment.getText(),comment.getCreatedAt()));
+        return ResponseEntity.ok(new CommentResponse(comment.getId(), comment.getText(), comment.getUser().getUsername(),comment.getCreatedAt()));
     }
 
 
@@ -53,7 +54,7 @@ public class CommentController {
 
         commentService.remove(commentId);
 
-        return ResponseEntity.ok("комментарий удален");
+        return ResponseEntity.ok(Map.of("comment","комментарий удален"));
     }
 
     @GetMapping("/getAll")

@@ -29,14 +29,14 @@ public class UserService {
                 .username(username)
                 .email(email)
                 .password(String.valueOf(password.hashCode()))
-                .userRole(UserRole.valueOf(role.toUpperCase()))
+                .role(UserRole.valueOf(role.toUpperCase()))
                 .build();
 
         return userRepository.saveAndFlush(user);
     }
 
     public List<UserEntity> findAllDevelopers() {
-        return userRepository.findAllByUserRole(UserRole.DEVELOPER);
+        return userRepository.findAllByRole(UserRole.DEVELOPER);
     }
 
 }

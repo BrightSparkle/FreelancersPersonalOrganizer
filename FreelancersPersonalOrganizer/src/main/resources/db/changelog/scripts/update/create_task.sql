@@ -12,4 +12,4 @@ create table task
 
 alter table task
     add constraint task_project_fk
-        foreign key (project_id) references project(id);
+        foreign key (project_id) references project(id) on delete cascade ;

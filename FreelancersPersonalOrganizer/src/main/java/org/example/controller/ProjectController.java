@@ -55,7 +55,7 @@ public class ProjectController {
 
     }
 
-    @GetMapping("/getall")
+    @GetMapping("/getAll")
     public ResponseEntity<?> getProjects(@RequestParam String username) {
 
         UserEntity user = userService.findByUsername(username).get();
