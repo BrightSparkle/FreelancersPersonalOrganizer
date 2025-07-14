@@ -100,7 +100,7 @@ export default function UsersList() {
             style={{ cursor: 'pointer' }}
             onClick={() => handleUserClick(u.username)}
           >
-            <b>{u.username}</b> ({u.userRole}) — Выполнено задач: {completedTasksCountByUsername[u.username] ?? 'загрузка...'}
+            <b>{u.username}</b> — Выполнено задач: {completedTasksCountByUsername[u.username] ?? 'загрузка...'}
           </li>
         ))}
       </ul>

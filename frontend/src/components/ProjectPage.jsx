@@ -50,9 +50,30 @@ export default function ProjectPage() {
     }
   }
 
+  // Функция для получения текущей даты и времени в формате datetime-local для min
+  const getMinDateTimeLocal = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
   const handleCreateTask = async () => {
     if (!newTaskTitle.trim()) return;
     setError(null);
+
+    if (newTaskDeadline) {
+      const selectedDate = new Date(newTaskDeadline);
+      const now = new Date();
+      if (selectedDate < now) {
+        setError('Дедлайн не может быть в прошлом');
+        return;
+      }
+    }
+
     const taskReq = {
       title: newTaskTitle.trim(),
       priority: newTaskPriority,
@@ -180,35 +201,20 @@ export default function ProjectPage() {
         // Перемещение в DONE — ставим текущую дату и время завершения
         const nowISO = new Date().toISOString();
         await handleUpdateEndTime(draggedTask.title, nowISO);
-        draggedTask.endTime = nowISO;
-        draggedTask.priority = destPriority;
+        setTasks(tasks.map(t =>
+          t.id === draggedTask.id ? { ...t, priority: destPriority, endTime: nowISO } : t
+        ));
       } else if (destPriority !== 'DONE') {
         // Перемещение в приоритет — обновляем priority и сбрасываем endTime
         await handleUpdatePriority(draggedTask.title, destPriority);
-        draggedTask.priority = destPriority;
-        draggedTask.endTime = null;
+        setTasks(tasks.map(t =>
+          t.id === draggedTask.id ? { ...t, priority: destPriority, endTime: null } : t
+        ));
       }
     } catch {
       setError('Ошибка при обновлении задачи');
       fetchTasks();
-      return;
     }
-
-    // Обновляем локально порядок в колонках
-    const newTasksByPriority = { ...tasksByPriority };
-
-    // Удаляем из старой колонки
-    newTasksByPriority[source.droppableId.toUpperCase()] = Array.from(
-      newTasksByPriority[source.droppableId.toUpperCase()]
-    );
-    newTasksByPriority[source.droppableId.toUpperCase()].splice(source.index, 1);
-
-    // Вставляем в новую колонку
-    newTasksByPriority[destPriority] = Array.from(newTasksByPriority[destPriority]);
-    newTasksByPriority[destPriority].splice(destination.index, 0, draggedTask);
-
-    // Обновляем состояние задач
-    setTasks(Object.values(newTasksByPriority).flat());
   };
 
   // Навигация по задаче
@@ -310,6 +316,15 @@ export default function ProjectPage() {
           <input
             type="datetime-local"
             value={newTaskDeadline}
+            min={(() => {
+              const now = new Date();
+              const year = now.getFullYear();
+              const month = String(now.getMonth() + 1).padStart(2, '0');
+              const day = String(now.getDate()).padStart(2, '0');
+              const hours = String(now.getHours()).padStart(2, '0');
+              const minutes = String(now.getMinutes()).padStart(2, '0');
+              return `${year}-${month}-${day}T${hours}:${minutes}`;
+            })()}
             onChange={(e) => setNewTaskDeadline(e.target.value)}
           />
           <select
