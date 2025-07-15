@@ -4,7 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function UsersList() {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext); // Добавлен logout из контекста
   const navigate = useNavigate();
 
   const [allUsers, setAllUsers] = useState([]);
@@ -76,15 +76,21 @@ export default function UsersList() {
     setFilteredUsers(filtered);
   }, [searchStr, allUsers]);
 
-  // Обработчик клика по пользователю — редирект на страницу проектов пользователя
   const handleUserClick = (username) => {
     console.log(username);
     navigate(`/user/${encodeURIComponent(username)}/projects`);
   };
 
   return (
-    <div className="users-list">
-      <h2>Пользователи</h2>
+    <div className="users-list" style={{ position: 'relative' }}>
+      {/* Добавлен header с кнопкой выхода как в Dashboard */}
+      <header>
+        <h2>Пользователи</h2>
+        <button onClick={() => logout()} style={{ position: 'absolute', top: 10, right: 10 }}>
+          Выйти
+        </button>
+      </header>
+
       <input
         type="text"
         placeholder="Введите часть имени пользователя"
