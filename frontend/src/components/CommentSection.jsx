@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getComments, createComment, deleteComment } from '../api/api';
-import ConfirmModal from './ConfirmModal'; // Убедитесь, что путь правильный
+import ConfirmModal from './ConfirmModal';
 
 export default function CommentSection({ taskId, user }) {
   const [comments, setComments] = useState([]);

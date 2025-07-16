@@ -599,3 +599,33 @@ comment-section {
 .users-list ul li:hover {
   background-color: #e9f5ff;
 }
+
+.users-list header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.users-list header h2 {
+  font-weight: 700;
+  font-size: 24px;
+  margin: 0;
+}
+
+.users-list header button {
+  background-color: #dc3545;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: background-color 0.3s ease;
+}
+
+.users-list header button:hover {
+  background-color: #a71d2a;
+}
